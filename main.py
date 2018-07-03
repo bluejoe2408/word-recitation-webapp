@@ -99,7 +99,7 @@ def logout():
 def dashboard():
     cur = mysql.connection.cursor()
 
-    result = cur.execute("SELECT * FROM words")
+    result = cur.execute("SELECT * FROM words WHERE users=%s", [session['username']])
 
     words = cur.fetchall()
 
@@ -166,16 +166,40 @@ def words():
         return render_template('words.html', msg=msg)
 
 
-
-
 @app.route('/word/<string:id>/')
 def article(id):
     cur = mysql.connection.cursor()
+    result = cur.execute("UPDATE users SET my=%s WHERE username= %s", (id, session['username']))
+    mysql.connection.commit()
     result = cur.execute("SELECT * FROM words WHERE id = %s", [id])
     word = cur.fetchone()
     next = int(id) + 1
     previous = int(id) - 1
-    return render_template('word.html', word=word, previous=previous, next=str(next))
+    return render_template('word.html', word=word, previous=previous, next=str(next), flag='word')
+
+
+@app.route('/CET4/<string:id>/')
+def article4(id):
+    cur = mysql.connection.cursor()
+    result = cur.execute("UPDATE users SET CET4=%s WHERE username= %s", (id, session['username']))
+    mysql.connection.commit()
+    result = cur.execute("SELECT * FROM CET4 WHERE id = %s", [id])
+    word = cur.fetchone()
+    next = int(id) + 1
+    previous = int(id) - 1
+    return render_template('word.html', word=word, previous=previous, next=str(next), flag='CET4')
+
+
+@app.route('/CET6/<string:id>/')
+def article6(id):
+    cur = mysql.connection.cursor()
+    result = cur.execute("UPDATE users SET CET6=%s WHERE username= %s", (id, session['username']))
+    mysql.connection.commit()
+    result = cur.execute("SELECT * FROM CET6 WHERE id = %s", [id])
+    word = cur.fetchone()
+    next = int(id) + 1
+    previous = int(id) - 1
+    return render_template('word.html', word=word, previous=previous, next=str(next), flag='CET6')
 
 
 # Edit word
@@ -212,16 +236,60 @@ def edit_word(id):
     return render_template('edit_word.html', form=form)
 
 
-@app.route('/articles')
-def articles():
-    return render_template("blank.html")
+@app.route('/wordlist')
+def wordlists():
+    wordlist = ['CET4', 'CET6']
+    return render_template("wordlist.html", wordlist=wordlist)
 
 
-@app.route('/listen')
-def listen():
-    return render_template("blank.html")
+@app.route('/wordlist/<string:id>/')
+def wordlist(id):
+    # Create cursor
+    cur = mysql.connection.cursor()
+
+    # Get articles
+    if id == 'CET4':
+        result = cur.execute("SELECT * FROM CET4")
+    else:
+        result = cur.execute("SELECT * FROM CET6")
+
+    words = cur.fetchall()
+
+    # Close connection
+    cur.close()
+    if result > 0:
+        return render_template('wordlistSpec.html', words=words, id=id)
+    else:
+        msg = 'No Words Found'
+        return render_template('wordlistSpec.html', msg=msg)
+
+
+@app.route('/wordlist/<string:id>/continue')
+def wordlistcon(id):
+    # Create cursor
+    cur = mysql.connection.cursor()
+
+    # Get articles
+    if id == 'CET4':
+        result = cur.execute("SELECT * FROM users WHERE username=%s", [session['username']])
+        wordlistlocs = cur.fetchone()
+        loc = wordlistlocs['CET4']
+    else:
+        result = cur.execute("SELECT * FROM users WHERE username=%s", [session['username']])
+        wordlistlocs = cur.fetchone()
+        loc = wordlistlocs['CET6']
+
+    cur = mysql.connection.cursor()
+    if id == 'CET4':
+        result = cur.execute("SELECT * FROM CET4 WHERE id = %s", [int(loc)])
+    else:
+        result = cur.execute("SELECT * FROM CET6 WHERE id = %s", [int(loc)])
+    word = cur.fetchone()
+    next = int(loc) + 1
+    previous = int(loc) - 1
+    return render_template('word.html', word=word, previous=previous, next=str(next), flag=id)
 
 
 if __name__ == '__main__':
     app.secret_key = "It doesn't matter"
-    app.run(debug=True)
+    app.run(debug=True, port=9999)

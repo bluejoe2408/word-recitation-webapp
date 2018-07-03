@@ -1,0 +1,18 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+  <h1>单词集</h1>
+  <hr>
+  <table class="table table-striped">
+  	<tr>
+  		<th>单词集</th>
+  		<th></th>
+  	</tr>
+  	{% for id in wordlist %}
+  	  <tr>
+  	  	<td>{{ id }}</td>
+  	  	<td><a class="btn btn-success" href="wordlist/{{ id }}">开始学习</a></td>
+  	  </tr>
+  	{% endfor %}
+  </table>
+{% endblock %}

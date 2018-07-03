@@ -4,10 +4,28 @@
   <h1>{{word.word}}</h1>
 
   <hr>
+{% if flag == 'word' %}
 	<div class="jumbotron text-center">
-	    <a href="http://127.0.0.1:5000/word/{{previous}}" class="btn btn-primary pull-left">上一个</a>
-	    <a href="http://127.0.0.1:5000/word/{{next}}" class="btn btn-primary pull-right">下一个</a>
+	    <a href="/word/{{previous}}" class="btn btn-primary pull-left">上一个</a>
+	    <a href="/word/{{next}}" class="btn btn-primary pull-right">下一个</a>
 	    <p>{{ word.word }}</p>
 	    <p>{{word.meaning|safe }}</p>
 	</div>
+{% endif %}
+{% if flag == 'CET4' %}
+	<div class="jumbotron text-center">
+	    <a href="/CET4/{{previous}}" class="btn btn-primary pull-left">上一个</a>
+	    <a href="/CET4/{{next}}" class="btn btn-primary pull-right">下一个</a>
+	    <p>{{ word.word }}</p>
+	    <p>{{word.meaning|safe }}</p>
+	</div>
+{% endif %}
+{% if flag == 'CET6' %}
+	<div class="jumbotron text-center">
+	    <a href="/CET6/{{previous}}" class="btn btn-primary pull-left">上一个</a>
+	    <a href="/CET6/{{next}}" class="btn btn-primary pull-right">下一个</a>
+	    <p>{{ word.word }}</p>
+	    <p>{{word.meaning|safe }}</p>
+	</div>
+{% endif %}
 {% endblock %}
